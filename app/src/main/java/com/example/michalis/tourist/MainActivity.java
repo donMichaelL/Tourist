@@ -154,8 +154,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLongListItemClickListener(String name) {
+    public void onLongListItemClickListener(Long id, String name) {
         Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+        resolver.update(PlaceEntry.URI_MAKE_HOME.buildUpon().appendPath(Long.toString(id)).build()
+                , null, null, null);
     }
 
     @Override

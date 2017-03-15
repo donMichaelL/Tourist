@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
+import com.google.android.gms.location.places.Place;
 
 import org.w3c.dom.Text;
 
@@ -70,7 +71,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
     }
 
     public interface LongListItemClickListerer {
-        void onLongListItemClickListener(String name);
+        void onLongListItemClickListener(Long id, String name);
     }
 
     public class PlaceAdapterViewHolder extends RecyclerView.ViewHolder
@@ -87,7 +88,8 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
         public boolean onLongClick(View v) {
             placeCursor.moveToPosition(getAdapterPosition());
             String name = placeCursor.getString(placeCursor.getColumnIndex(PlaceEntry.PLACE_NAME));
-            longlistItemClickListerer.onLongListItemClickListener(name);
+            Long id = placeCursor.getLong(placeCursor.getColumnIndex(PlaceEntry._ID));
+            longlistItemClickListerer.onLongListItemClickListener(id, name);
             return true;
         }
     }

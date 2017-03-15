@@ -33,5 +33,9 @@ public class PlaceContract {
 
         public static final Uri URI_PLACE_BASE = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PLACE_TABLE_NAME).build();
+
+        public static final String MAKE_HOME = "HOME";
+        public static final Uri URI_MAKE_HOME = BASE_CONTENT_URI.buildUpon()
+                .appendPath(MAKE_HOME).build();
     }
 }
