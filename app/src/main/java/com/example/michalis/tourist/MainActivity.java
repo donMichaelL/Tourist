@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity
 
     private void saveInDB(Place selectedPlace) {
         //TODO check when no internet connection
+        //TODO check for places with null options
         PlaceDBHelper placeDBHelper = new PlaceDBHelper(this);
         ContentValues values = new ContentValues();
         values.put(PlaceEntry.PLACE_ADDRESS, selectedPlace.getAddress().toString());

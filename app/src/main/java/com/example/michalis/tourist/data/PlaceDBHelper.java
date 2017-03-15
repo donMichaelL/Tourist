@@ -11,7 +11,7 @@ import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
 
 public class PlaceDBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "tourist.db";
-    private static final int DB_VERSION = 4;
+    private static final int DB_VERSION = 5;
 
 
     public PlaceDBHelper(Context context) {
@@ -35,6 +35,7 @@ public class PlaceDBHelper extends SQLiteOpenHelper {
                         PlaceEntry.PLACE_TYPE + " INTEGER, " +
                         PlaceEntry.PLACE_PRICE_LEVEL + " REAL, " +
                         PlaceEntry.PLACE_RATING + " REAL, " +
+                        PlaceEntry.PLACE_HOME + " INTEGER DEFAULT 0, " +
                         PlaceEntry.PLACE_WEBSITE + " TEXT ," +
                         " UNIQUE ("+ PlaceEntry.PLACE_ID +") ON CONFLICT REPLACE" +
                         ")";

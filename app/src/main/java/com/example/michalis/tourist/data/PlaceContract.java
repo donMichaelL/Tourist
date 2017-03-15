@@ -29,6 +29,7 @@ public class PlaceContract {
         public static final String PLACE_RATING = "rating";
         //TODO Not creating column for viewport
         public static final String PLACE_WEBSITE = "web_site";
+        public static final String PLACE_HOME = "home";
 
         public static final Uri URI_PLACE_BASE = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PLACE_TABLE_NAME).build();
