@@ -1,7 +1,9 @@
 package com.example.michalis.tourist;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +28,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //TODO Remove in production
         Stetho.initializeWithDefaults(this);
+
+        ContentResolver resolver = getContentResolver();
+        Cursor cursor = resolver.query(PlaceEntry.URI_PLACE_BASE,
+                null,
+                null,
+                null,
+                null);
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            String i = cursor.getString(cursor.getColumnIndex(PlaceEntry.PLACE_NAME));
+            Log.d("HELLO", i);
+        }
     }
 
     public void showLocations(View view) {
@@ -68,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         PlaceDBHelper placeDBHelper = new PlaceDBHelper(this);
         ContentValues values = new ContentValues();
         values.put(PlaceEntry.PLACE_ADDRESS, selectedPlace.getAddress().toString());
+        values.put(PlaceEntry.PLACE_NAME, selectedPlace.getName().toString());
         if (selectedPlace.getAttributions() != null) {
             values.put(PlaceEntry.PLACE_ATTRIBUTIONS, selectedPlace.getAttributions().toString());
         }
