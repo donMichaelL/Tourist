@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.PersistableBundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -27,7 +26,8 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>, PlaceAdapter.LongListItemClickListerer {
     private static final String TAG = MainActivity.class.getName();
 
     private static final int PLACE_PICKER_REQUEST = 1;
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //TODO Remove in production
         Stetho.initializeWithDefaults(this);
 
-        placeAdapter = new PlaceAdapter();
+        placeAdapter = new PlaceAdapter(this);
         recyclerView  = (RecyclerView) findViewById(R.id.recycler_view);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresher);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -121,12 +121,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 Log.d(TAG, "Rating" + String.valueOf(selectedPlace.getRating()));
                 Log.d(TAG, "Address" + selectedPlace.getViewport());
                 Log.d(TAG, "Address" + selectedPlace.getWebsiteUri());
-                saveinDB(selectedPlace);
+                saveInDB(selectedPlace);
             }
         }
     }
 
-    private void saveinDB(Place selectedPlace) {
+    private void saveInDB(Place selectedPlace) {
+        //TODO check when no internet connection
         PlaceDBHelper placeDBHelper = new PlaceDBHelper(this);
         ContentValues values = new ContentValues();
         values.put(PlaceEntry.PLACE_ADDRESS, selectedPlace.getAddress().toString());
@@ -151,10 +152,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         resolver.insert(PlaceEntry.URI_PLACE_BASE, values);
     }
 
+    @Override
+    public void onLongListItemClickListener(String name) {
+        Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-        Log.d(TAG, "CUROSR 2");
         switch (id) {
             case ID_PLACE_LOADER:
                 return new CursorLoader(this, PlaceEntry.URI_PLACE_BASE, null, null, null, null);
@@ -165,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader loader, Cursor data) {
-        Log.d(TAG, "CUROSR");
         swipeRefreshLayout.setRefreshing(false);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         recyclerView.smoothScrollToPosition(mPosition);
@@ -176,4 +179,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoaderReset(Loader loader) {
         placeAdapter.swapCursor(null);
     }
+
+
 }

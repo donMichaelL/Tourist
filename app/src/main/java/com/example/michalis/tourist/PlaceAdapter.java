@@ -13,12 +13,19 @@ import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
 
 import org.w3c.dom.Text;
 
+import java.util.List;
+
 /**
  * Created by michalis on 3/15/2017.
  */
 
 public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapterViewHolder> {
     private Cursor placeCursor;
+    private LongListItemClickListerer longlistItemClickListerer;
+
+    PlaceAdapter(LongListItemClickListerer longlistItemClickListerer) {
+        this.longlistItemClickListerer = longlistItemClickListerer;
+    }
 
     @Override
     public PlaceAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -62,12 +69,26 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
         return (long) placeCursor.getInt(placeCursor.getColumnIndex(PlaceEntry._ID));
     }
 
-    public class PlaceAdapterViewHolder extends RecyclerView.ViewHolder {
+    public interface LongListItemClickListerer {
+        void onLongListItemClickListener(String name);
+    }
+
+    public class PlaceAdapterViewHolder extends RecyclerView.ViewHolder
+            implements View.OnLongClickListener{
         private TextView tvPlaceName;
 
         public PlaceAdapterViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnLongClickListener(this);
             tvPlaceName = (TextView) itemView.findViewById(R.id.tv_place_name);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            placeCursor.moveToPosition(getAdapterPosition());
+            String name = placeCursor.getString(placeCursor.getColumnIndex(PlaceEntry.PLACE_NAME));
+            longlistItemClickListerer.onLongListItemClickListener(name);
+            return true;
         }
     }
 }
