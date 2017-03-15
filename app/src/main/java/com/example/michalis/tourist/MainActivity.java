@@ -5,9 +5,11 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,7 +25,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
-import com.google.android.gms.tasks.RuntimeExecutionException;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = MainActivity.class.getName();
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int ID_PLACE_LOADER = 843;
     private RecyclerView recyclerView;
     private PlaceAdapter placeAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ContentResolver resolver;
     int mPosition = RecyclerView.NO_POSITION;
 
@@ -41,22 +43,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
         //TODO Remove in production
         Stetho.initializeWithDefaults(this);
-        placeAdapter = new PlaceAdapter();
 
+        placeAdapter = new PlaceAdapter();
         recyclerView  = (RecyclerView) findViewById(R.id.recycler_view);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresher);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(placeAdapter);
 
-        resolver = getContentResolver();
-        Cursor cursor = resolver.query(PlaceEntry.URI_PLACE_BASE,
-                null,
-                null,
-                null,
-                null);
+        getSupportLoaderManager().initLoader(ID_PLACE_LOADER, null, this);
 
-        placeAdapter.swapCursor(cursor);
 
+        /**
+         * Swipe to refresh
+         */
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getSupportLoaderManager().restartLoader(ID_PLACE_LOADER, null, MainActivity.this);
+            }
+        });
+        /**
+         * Swipe to delete
+         */
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -70,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         }).attachToRecyclerView(recyclerView);
 
-        getSupportLoaderManager().initLoader(ID_PLACE_LOADER, null, this);
     }
 
 
@@ -137,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
 
-
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -150,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader loader, Cursor data) {
+        swipeRefreshLayout.setRefreshing(false);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         recyclerView.smoothScrollToPosition(mPosition);
         if (data.getCount() != 0) placeAdapter.swapCursor(data);

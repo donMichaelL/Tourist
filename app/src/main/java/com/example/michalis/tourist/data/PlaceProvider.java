@@ -9,6 +9,7 @@ import android.database.SQLException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
 
@@ -47,6 +48,7 @@ public class PlaceProvider extends ContentProvider {
         Cursor placesCursor;
         switch (match) {
             case GET_ALL_PLACES:
+                Log.d("HELLO", "CURSOR IS CALLED");
                 placesCursor = placeDBHelper.getReadableDatabase().query(
                         PlaceEntry.PLACE_TABLE_NAME,
                         projection,
