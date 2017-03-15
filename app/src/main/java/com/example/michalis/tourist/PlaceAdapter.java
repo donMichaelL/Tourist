@@ -35,6 +35,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
             return;
         }
         holder.tvPlaceName.setText(placeCursor.getString(placeCursor.getColumnIndex(PlaceEntry.PLACE_NAME)));
+        holder.itemView.setTag(placeCursor.getString(placeCursor.getColumnIndex(PlaceEntry.PLACE_ID)));
     }
 
     public void swapCursor(Cursor cursor) {

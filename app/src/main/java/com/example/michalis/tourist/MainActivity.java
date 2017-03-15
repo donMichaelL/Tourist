@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PLACE_PICKER_REQUEST = 1;
     private RecyclerView recyclerView;
     private PlaceAdapter placeAdapter;
+    private ContentResolver resolver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(placeAdapter);
 
-        ContentResolver resolver = getContentResolver();
+        resolver = getContentResolver();
         Cursor cursor = resolver.query(PlaceEntry.URI_PLACE_BASE,
                 null,
                 null,
@@ -47,6 +49,21 @@ public class MainActivity extends AppCompatActivity {
                 null);
 
         placeAdapter.swapCursor(cursor);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                String id = (String) viewHolder.itemView.getTag();
+                Uri newUri = PlaceEntry.URI_PLACE_BASE.buildUpon().appendPath(id).build();
+                resolver.delete(newUri,null,null);
+            }
+        }).attachToRecyclerView(recyclerView);
 
 
 //        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
