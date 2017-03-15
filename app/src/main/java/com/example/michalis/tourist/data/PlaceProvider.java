@@ -148,6 +148,7 @@ public class PlaceProvider extends ContentProvider {
                             PlaceEntry._ID + " = ?",
                             new String[]{Long.toString(ContentUris.parseId(uri))});
                     if (numberUpdated == 1) {
+                        getContext().getContentResolver().notifyChange(uri, null);
                         db.setTransactionSuccessful();
                     }
                 } finally {

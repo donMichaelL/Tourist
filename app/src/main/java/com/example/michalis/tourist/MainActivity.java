@@ -27,7 +27,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor>, PlaceAdapter.LongListItemClickListerer {
+        implements LoaderManager.LoaderCallbacks<Cursor>, PlaceAdapter.LongListItemClickListener {
     private static final String TAG = MainActivity.class.getName();
 
     private static final int PLACE_PICKER_REQUEST = 1;
@@ -156,8 +156,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLongListItemClickListener(Long id, String name) {
         Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
-        resolver.update(PlaceEntry.URI_MAKE_HOME.buildUpon().appendPath(Long.toString(id)).build()
+        int numberUpdated = resolver.update(PlaceEntry.URI_MAKE_HOME.buildUpon().appendPath(Long.toString(id)).build()
                 , null, null, null);
+        if (numberUpdated==1){
+            //TODO check what happened
+            getSupportLoaderManager().restartLoader(ID_PLACE_LOADER, null, MainActivity.this);
+        }
     }
 
     @Override

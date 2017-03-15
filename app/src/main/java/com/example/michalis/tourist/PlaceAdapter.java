@@ -1,6 +1,5 @@
 package com.example.michalis.tourist;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
@@ -12,19 +11,15 @@ import android.widget.TextView;
 import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
 import com.google.android.gms.location.places.Place;
 
-import org.w3c.dom.Text;
-
-import java.util.List;
-
 /**
  * Created by michalis on 3/15/2017.
  */
 
 public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapterViewHolder> {
     private Cursor placeCursor;
-    private LongListItemClickListerer longlistItemClickListerer;
+    private LongListItemClickListener longlistItemClickListerer;
 
-    PlaceAdapter(LongListItemClickListerer longlistItemClickListerer) {
+    PlaceAdapter(LongListItemClickListener longlistItemClickListerer) {
         this.longlistItemClickListerer = longlistItemClickListerer;
     }
 
@@ -44,6 +39,9 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
         }
         holder.tvPlaceName.setText(placeCursor.getString(placeCursor.getColumnIndex(PlaceEntry.PLACE_NAME)));
         holder.itemView.setTag(placeCursor.getString(placeCursor.getColumnIndex(PlaceEntry.PLACE_ID)));
+
+        if (placeCursor.getInt(placeCursor.getColumnIndex(PlaceEntry.PLACE_HOME))==1)
+            holder.tvPlaceName.setText("HOME");
     }
 
     public void swapCursor(Cursor cursor) {
@@ -70,7 +68,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
         return (long) placeCursor.getInt(placeCursor.getColumnIndex(PlaceEntry._ID));
     }
 
-    public interface LongListItemClickListerer {
+    public interface LongListItemClickListener {
         void onLongListItemClickListener(Long id, String name);
     }
 
