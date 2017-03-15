@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         recyclerView  = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(placeAdapter);
 
         resolver = getContentResolver();

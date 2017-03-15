@@ -54,6 +54,14 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
         return placeCursor.getCount();
     }
 
+    @Override
+    public long getItemId(int position) {
+        if (!placeCursor.moveToPosition(position)){
+            return 0;
+        }
+        return (long) placeCursor.getInt(placeCursor.getColumnIndex(PlaceEntry._ID));
+    }
+
     public class PlaceAdapterViewHolder extends RecyclerView.ViewHolder {
         private TextView tvPlaceName;
 
