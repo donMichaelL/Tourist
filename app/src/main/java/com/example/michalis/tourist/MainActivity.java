@@ -17,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.michalis.tourist.data.PlaceDBHelper;
 import com.facebook.stetho.Stetho;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(placeAdapter);
+        resolver = getContentResolver();
 
         getSupportLoaderManager().initLoader(ID_PLACE_LOADER, null, this);
 
@@ -73,9 +75,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                String id = (String) viewHolder.itemView.getTag();
-                Uri newUri = PlaceEntry.URI_PLACE_BASE.buildUpon().appendPath(id).build();
-                resolver.delete(newUri,null,null);
+                if (direction == ItemTouchHelper.LEFT) {
+                    String id = (String) viewHolder.itemView.getTag();
+                    Uri newUri = PlaceEntry.URI_PLACE_BASE.buildUpon().appendPath(id).build();
+                    resolver.delete(newUri, null, null);
+                } else if (direction == ItemTouchHelper.RIGHT) {
+                    Toast.makeText(MainActivity.this, "HELLO", Toast.LENGTH_SHORT).show();
+                }
             }
         }).attachToRecyclerView(recyclerView);
 
@@ -140,13 +146,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(PlaceEntry.PLACE_PRICE_LEVEL, selectedPlace.getPriceLevel());
         values.put(PlaceEntry.PLACE_RATING, selectedPlace.getRating());
         values.put(PlaceEntry.PLACE_WEBSITE, selectedPlace.getWebsiteUri().toString());
-        ContentResolver resolver = getContentResolver();
+
+        // TODO use asynch task
         resolver.insert(PlaceEntry.URI_PLACE_BASE, values);
     }
 
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
+        Log.d(TAG, "CUROSR 2");
         switch (id) {
             case ID_PLACE_LOADER:
                 return new CursorLoader(this, PlaceEntry.URI_PLACE_BASE, null, null, null, null);
@@ -157,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader loader, Cursor data) {
+        Log.d(TAG, "CUROSR");
         swipeRefreshLayout.setRefreshing(false);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         recyclerView.smoothScrollToPosition(mPosition);
