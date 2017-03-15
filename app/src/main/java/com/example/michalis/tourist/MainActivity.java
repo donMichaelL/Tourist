@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.michalis.tourist.data.PlaceDBHelper;
+import com.facebook.stetho.Stetho;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //TODO Remove in production
+        Stetho.initializeWithDefaults(this);
     }
 
     public void showLocations(View view) {
