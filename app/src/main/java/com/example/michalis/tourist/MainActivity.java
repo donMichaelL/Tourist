@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -22,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
 
     private static final int PLACE_PICKER_REQUEST = 1;
+    private RecyclerView recyclerView;
+    private PlaceAdapter placeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //TODO Remove in production
         Stetho.initializeWithDefaults(this);
+        placeAdapter = new PlaceAdapter();
+
+        recyclerView  = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(placeAdapter);
 
         ContentResolver resolver = getContentResolver();
         Cursor cursor = resolver.query(PlaceEntry.URI_PLACE_BASE,
@@ -37,20 +46,23 @@ public class MainActivity extends AppCompatActivity {
                 null,
                 null);
 
-        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            String i = cursor.getString(cursor.getColumnIndex(PlaceEntry.PLACE_NAME));
-            Log.d("HELLO", i);
-        }
-        cursor.close();
+        placeAdapter.swapCursor(cursor);
 
-        Uri newUri = PlaceEntry.URI_PLACE_BASE.buildUpon().appendPath("ChIJN6W-X_VYwokRTqwcBnTw1Uk").build();
-        Cursor oneCursor = resolver.query(newUri, null, null, null, null);
 
-        Log.d(TAG, "REEE "+ String.valueOf(oneCursor.getCount()));
-
-        oneCursor.close();
-
-        resolver.delete(newUri,null,null);
+//        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+//            String i = cursor.getString(cursor.getColumnIndex(PlaceEntry.PLACE_NAME));
+//            Log.d("HELLO", i);
+//        }
+//        cursor.close();
+//
+//        Uri newUri = PlaceEntry.URI_PLACE_BASE.buildUpon().appendPath("ChIJN6W-X_VYwokRTqwcBnTw1Uk").build();
+//        Cursor oneCursor = resolver.query(newUri, null, null, null, null);
+//
+//        Log.d(TAG, "REEE "+ String.valueOf(oneCursor.getCount()));
+//
+//        oneCursor.close();
+//
+//        resolver.delete(newUri,null,null);
     }
 
 
