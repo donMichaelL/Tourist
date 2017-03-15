@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Address" + selectedPlace.getId());
                 Log.d(TAG, "Address" + selectedPlace.getLatLng().latitude);
                 Log.d(TAG, "Address" + selectedPlace.getLatLng().longitude);
-                Log.d(TAG, "Address" + selectedPlace.getLocale());
+                Log.d(TAG, "Locale --> " + selectedPlace.getLocale());
                 Log.d(TAG, "Address" + selectedPlace.getPhoneNumber());
                 Log.d(TAG, "Address" + selectedPlace.getPlaceTypes());
                 Log.d(TAG, "Address" + selectedPlace.getPriceLevel());
