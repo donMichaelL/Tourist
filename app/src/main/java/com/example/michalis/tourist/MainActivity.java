@@ -5,6 +5,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,14 +23,17 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
+import com.google.android.gms.tasks.RuntimeExecutionException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = MainActivity.class.getName();
 
     private static final int PLACE_PICKER_REQUEST = 1;
+    private static final int ID_PLACE_LOADER = 843;
     private RecyclerView recyclerView;
     private PlaceAdapter placeAdapter;
     private ContentResolver resolver;
+    int mPosition = RecyclerView.NO_POSITION;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +57,10 @@ public class MainActivity extends AppCompatActivity {
         placeAdapter.swapCursor(cursor);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
-
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
-
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 String id = (String) viewHolder.itemView.getTag();
@@ -65,27 +69,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }).attachToRecyclerView(recyclerView);
 
-
-//        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-//            String i = cursor.getString(cursor.getColumnIndex(PlaceEntry.PLACE_NAME));
-//            Log.d("HELLO", i);
-//        }
-//        cursor.close();
-//
-//        Uri newUri = PlaceEntry.URI_PLACE_BASE.buildUpon().appendPath("ChIJN6W-X_VYwokRTqwcBnTw1Uk").build();
-//        Cursor oneCursor = resolver.query(newUri, null, null, null, null);
-//
-//        Log.d(TAG, "REEE "+ String.valueOf(oneCursor.getCount()));
-//
-//        oneCursor.close();
-//
-//        resolver.delete(newUri,null,null);
+        getSupportLoaderManager().initLoader(ID_PLACE_LOADER, null, this);
     }
 
 
 
 
-    public void showLocations(View view) {
+    public void startPlacePickerUI(View view) {
         Log.d(TAG, "Show locations button is clicked");
         PlacePicker.IntentBuilder placeBuilder = new PlacePicker.IntentBuilder();
         try {
@@ -143,5 +133,29 @@ public class MainActivity extends AppCompatActivity {
         values.put(PlaceEntry.PLACE_WEBSITE, selectedPlace.getWebsiteUri().toString());
         ContentResolver resolver = getContentResolver();
         resolver.insert(PlaceEntry.URI_PLACE_BASE, values);
+    }
+
+
+
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case ID_PLACE_LOADER:
+                return new CursorLoader(this, PlaceEntry.URI_PLACE_BASE, null, null, null, null);
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + id);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, Cursor data) {
+        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+        recyclerView.smoothScrollToPosition(mPosition);
+        if (data.getCount() != 0) placeAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+        placeAdapter.swapCursor(null);
     }
 }
