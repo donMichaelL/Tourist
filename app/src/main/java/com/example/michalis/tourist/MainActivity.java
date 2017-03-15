@@ -1,15 +1,18 @@
 package com.example.michalis.tourist;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.michalis.tourist.data.PlaceDBHelper;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
@@ -53,8 +56,31 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Rating" + String.valueOf(selectedPlace.getRating()));
                 Log.d(TAG, "Address" + selectedPlace.getViewport());
                 Log.d(TAG, "Address" + selectedPlace.getWebsiteUri());
-
+                saveinDB(selectedPlace);
             }
         }
+    }
+
+    private void saveinDB(Place selectedPlace) {
+        PlaceDBHelper placeDBHelper = new PlaceDBHelper(this);
+        ContentValues values = new ContentValues();
+        values.put(PlaceEntry.PLACE_ADDRESS, selectedPlace.getAddress().toString());
+        if (selectedPlace.getAttributions() != null) {
+            values.put(PlaceEntry.PLACE_ATTRIBUTIONS, selectedPlace.getAttributions().toString());
+        }
+        values.put(PlaceEntry.PLACE_ID, selectedPlace.getId().toString());
+        values.put(PlaceEntry.PLACE_LATITUDE, selectedPlace.getLatLng().latitude);
+        values.put(PlaceEntry.PLACE_LONGITUDE, selectedPlace.getLatLng().longitude);
+        if (selectedPlace.getLocale() != null) {
+            values.put(PlaceEntry.PLACE_LOCALE, selectedPlace.getLocale().toString());
+        }
+        values.put(PlaceEntry.PLACE_PHONE_NUMBER, selectedPlace.getPhoneNumber().toString());
+        // TODO check if exception
+        values.put(PlaceEntry.PLACE_TYPE, selectedPlace.getPlaceTypes().get(0));
+        values.put(PlaceEntry.PLACE_PRICE_LEVEL, selectedPlace.getPriceLevel());
+        values.put(PlaceEntry.PLACE_RATING, selectedPlace.getRating());
+        values.put(PlaceEntry.PLACE_WEBSITE, selectedPlace.getWebsiteUri().toString());
+        placeDBHelper.getWritableDatabase().insert(PlaceEntry.PLACE_TABLE_NAME, null, values);
+
     }
 }

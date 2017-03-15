@@ -1,4 +1,4 @@
-package com.example.michalis.tourist;
+package com.example.michalis.tourist.data;
 
 import android.provider.BaseColumns;
 
@@ -12,8 +12,8 @@ public class PlaceContract {
     private PlaceContract(){}
 
     public static final class PlaceEntry implements BaseColumns {
-        public static final String PLACE_TABLE = "PLACES";
-        public static final String PLACE_ADDRESS = "adress";
+        public static final String PLACE_TABLE_NAME = "PLACES";
+        public static final String PLACE_ADDRESS = "address";
         public static final String PLACE_ATTRIBUTIONS = "attributions";
         public static final String PLACE_ID = "place_id";
         public static final String PLACE_LATITUDE = "latitude";
@@ -21,8 +21,8 @@ public class PlaceContract {
         public static final String PLACE_LOCALE = "locale";
         public static final String PLACE_PHONE_NUMBER = "phone_number";
         //TODO Create a seperate table
-        public static final String PLCE_TYPE = "type";
-        public static final String PLACE_LEVEL = "level";
+        public static final String PLACE_TYPE = "type";
+        public static final String PLACE_PRICE_LEVEL = "level";
         public static final String PLACE_RATING = "rating";
         //TODO Not creating column for viewport
         public static final String PLACE_WEBSITE = "web_site";
