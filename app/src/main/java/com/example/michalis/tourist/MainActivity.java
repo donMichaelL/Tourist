@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 null,
                 null,
                 null);
+
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             String i = cursor.getString(cursor.getColumnIndex(PlaceEntry.PLACE_NAME));
             Log.d("HELLO", i);
