@@ -1,9 +1,11 @@
 package com.example.michalis.tourist.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -66,7 +68,21 @@ public class PlaceProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        return null;
+        int match = URI_MATCHER.match(uri);
+        switch (match) {
+            case GET_ALL_PLACES:
+                long id = placeDBHelper.getWritableDatabase().insert(
+                        PlaceEntry.PLACE_TABLE_NAME, null, values);
+                if (id>0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                    return ContentUris.withAppendedId(PlaceEntry.URI_PLACE_BASE, id);
+                } else {
+                    throw new SQLException("Failed to insert");
+                }
+            default:
+                throw new UnsupportedOperationException("Unknown Uri");
+
+        }
     }
 
     @Override

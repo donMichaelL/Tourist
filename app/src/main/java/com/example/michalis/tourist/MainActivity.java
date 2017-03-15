@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             String i = cursor.getString(cursor.getColumnIndex(PlaceEntry.PLACE_NAME));
             Log.d("HELLO", i);
         }
+        cursor.close();
     }
 
     public void showLocations(View view) {
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         values.put(PlaceEntry.PLACE_PRICE_LEVEL, selectedPlace.getPriceLevel());
         values.put(PlaceEntry.PLACE_RATING, selectedPlace.getRating());
         values.put(PlaceEntry.PLACE_WEBSITE, selectedPlace.getWebsiteUri().toString());
-        placeDBHelper.getWritableDatabase().insert(PlaceEntry.PLACE_TABLE_NAME, null, values);
-
+        ContentResolver resolver = getContentResolver();
+        resolver.insert(PlaceEntry.URI_PLACE_BASE, values);
     }
 }
