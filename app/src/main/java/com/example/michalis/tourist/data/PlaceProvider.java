@@ -11,6 +11,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
+
+import java.net.URI;
+
 /**
  * Created by michalis on 3/15/2017.
  */
@@ -32,7 +35,8 @@ public class PlaceProvider extends ContentProvider {
     private static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(PlaceContract.AUTHORITY, PlaceEntry.PLACE_TABLE_NAME, GET_ALL_PLACES);
-        uriMatcher.addURI(PlaceContract.AUTHORITY, PlaceEntry.PLACE_TABLE_NAME + "/#", GET_ONE_PLACE);
+        // GET ONE PLACE WITH PLACE_ID not _ID
+        uriMatcher.addURI(PlaceContract.AUTHORITY, PlaceEntry.PLACE_TABLE_NAME + "/*", GET_ONE_PLACE);
         return uriMatcher;
     }
 
@@ -48,6 +52,16 @@ public class PlaceProvider extends ContentProvider {
                         projection,
                         selection,
                         selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case GET_ONE_PLACE:
+                placesCursor = placeDBHelper.getReadableDatabase().query(
+                        PlaceEntry.PLACE_TABLE_NAME,
+                        projection,
+                        PlaceEntry.PLACE_ID + " = ?",
+                        new String[]{uri.getPathSegments().get(1)},
                         null,
                         null,
                         sortOrder);
@@ -87,7 +101,22 @@ public class PlaceProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        int match = URI_MATCHER.match(uri);
+        int numberRowsDeleted;
+        switch (match) {
+            case GET_ONE_PLACE:
+                numberRowsDeleted = placeDBHelper.getWritableDatabase().delete(
+                        PlaceEntry.PLACE_TABLE_NAME,
+                        PlaceEntry.PLACE_ID + " = ?",
+                        new String[] {uri.getPathSegments().get(1)});
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown Uri");
+        }
+        if (numberRowsDeleted !=0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return numberRowsDeleted;
     }
 
     @Override

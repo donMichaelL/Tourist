@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,7 +42,19 @@ public class MainActivity extends AppCompatActivity {
             Log.d("HELLO", i);
         }
         cursor.close();
+
+        Uri newUri = PlaceEntry.URI_PLACE_BASE.buildUpon().appendPath("ChIJN6W-X_VYwokRTqwcBnTw1Uk").build();
+        Cursor oneCursor = resolver.query(newUri, null, null, null, null);
+
+        Log.d(TAG, "REEE "+ String.valueOf(oneCursor.getCount()));
+
+        oneCursor.close();
+
+        resolver.delete(newUri,null,null);
     }
+
+
+
 
     public void showLocations(View view) {
         Log.d(TAG, "Show locations button is clicked");
