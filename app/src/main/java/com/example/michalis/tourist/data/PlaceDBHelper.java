@@ -11,7 +11,7 @@ import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
 
 public class PlaceDBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "tourist.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 3;
 
 
     public PlaceDBHelper(Context context) {
@@ -23,6 +23,7 @@ public class PlaceDBHelper extends SQLiteOpenHelper {
         String insertPlaceTable =
                 "CREATE TABLE " + PlaceEntry.PLACE_TABLE_NAME + " (" +
                         PlaceEntry._ID + " INTEGER PRIMARY KEY, " +
+                        PlaceEntry.PLACE_NAME + " TEXT, " +
                         PlaceEntry.PLACE_ADDRESS + " TEXT, " +
                         PlaceEntry.PLACE_ATTRIBUTIONS + " TEXT, " +
                         PlaceEntry.PLACE_ID + " TEXT, " +
@@ -44,6 +45,7 @@ public class PlaceDBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // TODO Think about dropping in production
         String DROP_DATABASE = "DROP TABLE IF EXISTS " + PlaceEntry.PLACE_TABLE_NAME;
+        db.execSQL(DROP_DATABASE);
         this.onCreate(db);
     }
 }
