@@ -23,6 +23,8 @@
             android:authorities="com.example.michalis.tourist.app"
             android:name=".data.PlaceProvider"
             android:exported="false"/>
+        <service android:name=".CalculateDistanceService"
+            android:exported="false"/>
     </application>
 
 </manifest>

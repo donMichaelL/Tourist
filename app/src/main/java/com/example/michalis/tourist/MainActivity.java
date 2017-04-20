@@ -28,8 +28,9 @@ import com.example.michalis.tourist.data.PlaceContract.PlaceEntry;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor>, PlaceAdapter.LongListItemClickListener {
-    private static final String TAG = MainActivity.class.getName();
+    public static final String NEW_PLACE_URI = "new_place_uri";
 
+    private static final String TAG = MainActivity.class.getName();
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final int ID_PLACE_LOADER = 843;
     private RecyclerView recyclerView;
@@ -121,12 +122,12 @@ public class MainActivity extends AppCompatActivity
                 Log.d(TAG, "Rating" + String.valueOf(selectedPlace.getRating()));
                 Log.d(TAG, "Address" + selectedPlace.getViewport());
                 Log.d(TAG, "Address" + selectedPlace.getWebsiteUri());
-                saveInDB(selectedPlace);
+                savePlaceInDB(selectedPlace);
             }
         }
     }
 
-    private void saveInDB(Place selectedPlace) {
+    private void savePlaceInDB(Place selectedPlace) {
         //TODO check when no internet connection
         //TODO check for places with null options
         PlaceDBHelper placeDBHelper = new PlaceDBHelper(this);
@@ -150,7 +151,10 @@ public class MainActivity extends AppCompatActivity
         values.put(PlaceEntry.PLACE_WEBSITE, selectedPlace.getWebsiteUri().toString());
 
         // TODO use asynch task
-        resolver.insert(PlaceEntry.URI_PLACE_BASE, values);
+        Uri newPlaceUri = resolver.insert(PlaceEntry.URI_PLACE_BASE, values);
+        Intent intent = new Intent(this, CalculateDistanceService.class);
+        intent.putExtra(NEW_PLACE_URI, newPlaceUri.toString());
+        startService(intent);
     }
 
     @Override
@@ -186,6 +190,5 @@ public class MainActivity extends AppCompatActivity
     public void onLoaderReset(Loader loader) {
         placeAdapter.swapCursor(null);
     }
-
 
 }

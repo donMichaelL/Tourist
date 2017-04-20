@@ -54,6 +54,10 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
         }
     }
 
+    public Cursor getPlaceCursor() {
+        return placeCursor;
+    }
+
     @Override
     public int getItemCount() {
         if (placeCursor == null) return 0;
